@@ -1,62 +1,86 @@
 <script setup>
+import portrait from '../assets/portrait.jpg'
+
 const profile = {
   name: 'Nick Mancari',
   role: 'Software Engineer',
   location: 'Roaring Springs, Texas (rural Texas Panhandle)',
   bio: `Software engineer with 4+ years building and shipping full-stack production systems in Ruby on Rails, Go, Vue.js, and MongoDB, including LLM-powered features from integration through production rollout. ` +
   `Backed by a decade in technical support and systems, giving me unusually deep product, debugging, and customer insight. ` +
-  `I own features end-to-end — architecture, test coverage, deployment, and the messy production realities most engineers only see secondhand`,
-  tail: `The founding maintainer of the open source developer HL7 test tools at hl7x.com`,
+  `I own features end-to-end — architecture, test coverage, deployment, and the messy production realities most engineers only see secondhand.`,
+  body: `Working currently in Healthcare Information Analytics, bringing AI tools to production for the top 300 healthcare providers.`,
+  tail: `Founding maintainer of the open-source HL7 developer test tools at hl7x.com.`,
   links: [
     { label: 'Email',    url: 'mailto:nickjmancari@gmail.com' },
     { label: 'GitHub',   url: 'https://github.com/nickmancari' },
     { label: 'LinkedIn', url: 'https://www.linkedin.com/in/nick-mancari-374484200/' },
-    { label: 'hl7x', url: 'https://hl7x.com' },
+    { label: 'hl7x',     url: 'https://hl7x.com' },
   ],
 }
 
 const projects = [
   {
     title: 'HL7x',
-    year: 2024,
-    blurb: 'Site for HL7 developer testing tools -- the HL7 developer experience.',
-    tags: ['Vue', 'Github'],
-    url: 'https:hl7x.com'
+    year: 2026,
+    blurb: 'Site for HL7 developer testing tools — elevating the HL7 developer experience.',
+    tags: ['Vue', 'GitHub'],
+    url: 'https://hl7x.com',
   },
   {
     title: 'kodimcp',
-    year: '2025',
-    blurb: 'Simple, pluggable local MCP server for Kodi entertainment system.',
+    year: 2025,
+    blurb: 'Simple, pluggable local MCP server for the Kodi entertainment system.',
     tags: ['Go', 'API', 'MCP', 'Ollama'],
     url: 'https://github.com/nickmancari/kodimcp',
   },
   {
     title: 'placebo',
-    year: '2023',
-    blurb: 'Powerful open source lightweight HL7 CLI testing tool.',
+    year: 2023,
+    blurb: 'Powerful, lightweight open-source HL7 CLI testing tool.',
     tags: ['Go', 'Docker'],
-    url: '#',
+    url: '',
   },
 ]
+
+const isExternal = (url) => /^https?:\/\//.test(url)
+const hasLink = (url) => !!url && url !== '#'
 </script>
 
 <template>
-  <main class="page">
+  <main id="main" class="page">
     <!-- ── Header / bio ─────────────────────────────────────────── -->
     <header class="intro">
-      <p class="eyebrow">{{ profile.location }}</p>
-      <h1 class="name">{{ profile.name }}</h1>
-      <p class="role">{{ profile.role }}</p>
-      <p class="bio">{{ profile.bio }}</p>
-      <br>
-      <p class="tail">{{ profile.tail }}</p>
-      <nav class="links">
+      <div class="intro-top">
+        <img
+          class="portrait"
+          :src="portrait"
+          width="900"
+          height="1200"
+          alt="Portrait of Nick Mancari"
+          fetchpriority="high"
+        />
+        <div class="intro-head">
+          <p class="eyebrow">{{ profile.location }}</p>
+          <h1 class="name">{{ profile.name }}</h1>
+          <p class="role">{{ profile.role }}</p>
+        </div>
+      </div>
+
+      <div class="bio-block">
+        <p class="bio">{{ profile.bio }}</p>
+        <p class="body">{{ profile.body }}</p>
+        <p class="tail">{{ profile.tail }}</p>
+      </div>
+
+      <nav class="links" aria-label="Contact and profiles">
         <a
           v-for="link in profile.links"
           :key="link.label"
           :href="link.url"
           class="link"
-        >{{ link.label }}</a>
+          :target="isExternal(link.url) ? '_blank' : null"
+          :rel="isExternal(link.url) ? 'noopener noreferrer' : null"
+        >{{ link.label }}<span v-if="isExternal(link.url)" class="link-ext" aria-hidden="true">↗</span></a>
       </nav>
     </header>
 
@@ -64,8 +88,8 @@ const projects = [
     <div class="ornament" aria-hidden="true">❧</div>
 
     <!-- ── Portfolio ────────────────────────────────────────────── -->
-    <section class="work">
-      <h2 class="section-label">Selected Work</h2>
+    <section class="work" aria-labelledby="work-label">
+      <h2 id="work-label" class="section-label">Selected Work</h2>
       <ul class="projects">
         <li
           v-for="(project, i) in projects"
@@ -73,16 +97,29 @@ const projects = [
           class="project"
           :style="{ animationDelay: `${0.08 * i}s` }"
         >
-          <a :href="project.url" class="project-link">
+          <component
+            :is="hasLink(project.url) ? 'a' : 'div'"
+            :href="hasLink(project.url) ? project.url : null"
+            :target="isExternal(project.url) ? '_blank' : null"
+            :rel="isExternal(project.url) ? 'noopener noreferrer' : null"
+            class="project-link"
+            :class="{ 'is-static': !hasLink(project.url) }"
+          >
             <span class="project-year">{{ project.year }}</span>
             <span class="project-body">
-              <span class="project-title">{{ project.title }}</span>
+              <span class="project-title">
+                {{ project.title }}<span
+                  v-if="isExternal(project.url)"
+                  class="project-arrow"
+                  aria-hidden="true"
+                >↗</span>
+              </span>
               <span class="project-blurb">{{ project.blurb }}</span>
               <span class="project-tags">
                 <span v-for="tag in project.tags" :key="tag" class="tag">{{ tag }}</span>
               </span>
             </span>
-          </a>
+          </component>
         </li>
       </ul>
     </section>
@@ -95,6 +132,35 @@ const projects = [
 
 <style>
 /* ── Intro ──────────────────────────────────────────────────────── */
+.intro-top {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.4rem, 4vw, 2.2rem);
+}
+.intro-head { min-width: 0; }
+
+/* ── Portrait ───────────────────────────────────────────────────── */
+.portrait {
+  flex: none;
+  width: clamp(7.5rem, 26vw, 11rem);
+  aspect-ratio: 3 / 4;
+  height: auto;
+  object-fit: cover;
+  object-position: 50% 30%;
+  border-radius: 4px;
+  border: 1px solid var(--rule);
+  /* Layered shadow + faint warm rim to seat it on the paper */
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.4) inset,
+    0 2px 4px rgba(30, 24, 10, 0.10),
+    0 10px 28px rgba(30, 24, 10, 0.16);
+  /* Subtle warmth so the photo harmonizes with the palette */
+  filter: saturate(0.92) contrast(1.02);
+}
+
+.bio-block,
+.links { max-width: 38rem; }
+
 .eyebrow {
   font-family: 'Lora', serif;
   font-style: italic;
@@ -121,14 +187,24 @@ const projects = [
   font-variation-settings: 'opsz' 36;
   color: var(--accent);
   font-size: 1.2rem;
-  margin-top: 0.5rem;
+  margin-top: 0.6rem;
   letter-spacing: 0.01em;
 }
-.bio {
-  margin-top: 1.8rem;
+
+/* ── Bio paragraphs (proper vertical rhythm, no <br>) ───────────── */
+.bio-block { margin-top: 1.9rem; }
+.bio,
+.body,
+.tail {
   color: #3a382f;
   line-height: 1.78;
   font-size: 0.98rem;
+}
+.body { margin-top: 1.15rem; }
+.tail {
+  margin-top: 1.15rem;
+  font-style: italic;
+  color: #4a473e;
 }
 .bio::first-letter {
   font-family: 'Fraunces', serif;
@@ -141,8 +217,10 @@ const projects = [
   padding-top: 0.04em;
   color: var(--accent);
 }
+
+/* ── Links ──────────────────────────────────────────────────────── */
 .links {
-  margin-top: 2rem;
+  margin-top: 2.2rem;
   display: flex;
   flex-wrap: wrap;
   gap: 1.6rem;
@@ -157,6 +235,13 @@ const projects = [
   transition: color 0.18s, text-decoration-color 0.18s;
 }
 .link:hover { color: var(--accent); text-decoration-color: var(--accent); }
+.link-ext {
+  font-size: 0.72em;
+  margin-left: 0.18em;
+  vertical-align: 0.12em;
+  text-decoration: none;
+  display: inline-block;
+}
 
 /* ── Ornament ───────────────────────────────────────────────────── */
 .ornament {
@@ -166,12 +251,11 @@ const projects = [
   font-family: 'Fraunces', serif;
   font-size: 2rem;
   letter-spacing: 0;
-  margin: clamp(3rem, 8vw, 5.5rem) 0 0;
+  margin: clamp(3rem, 8vw, 5.5rem) 0 clamp(2.5rem, 7vw, 4rem);
   user-select: none;
 }
 
 /* ── Work ───────────────────────────────────────────────────────── */
-.work { margin-top: 2rem; }
 .section-label {
   display: flex;
   align-items: center;
@@ -214,10 +298,11 @@ const projects = [
   margin: 0 -0.6rem;
   border-radius: 3px;
 }
-.project-link:hover {
+a.project-link:hover {
   background: rgba(184, 71, 42, 0.04);
   padding-left: 1rem;
 }
+.project-link.is-static { cursor: default; }
 
 .project-year {
   font-size: 0.83rem;
@@ -232,7 +317,18 @@ const projects = [
   font-size: 1.45rem;
   transition: color 0.18s;
 }
-.project-link:hover .project-title { color: var(--accent); }
+a.project-link:hover .project-title { color: var(--accent); }
+.project-arrow {
+  font-size: 0.6em;
+  margin-left: 0.3em;
+  vertical-align: 0.22em;
+  color: var(--accent);
+  opacity: 0;
+  transform: translate(-2px, 2px);
+  display: inline-block;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+a.project-link:hover .project-arrow { opacity: 0.85; transform: translate(0, 0); }
 .project-blurb { font-family: 'Lora', serif; color: #4a473e; font-size: 0.93rem; line-height: 1.6; }
 .project-tags { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.25rem; }
 .tag {
@@ -260,6 +356,19 @@ const projects = [
   color: var(--rule);
   margin-bottom: 1.4rem;
   font-size: 0.9rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project { animation: none; opacity: 1; }
+}
+
+@media (max-width: 560px) {
+  .intro-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.3rem;
+  }
+  .portrait { width: clamp(8.5rem, 42vw, 11rem); }
 }
 
 @media (max-width: 480px) {
