@@ -1,0 +1,1 @@
+import{i as e,n as t,o as n}from"./index-D9On3O1y.js";import{t as r}from"./_plugin-vue_export-helper-BDNMzG2s.js";var i={},a={class:`page`};function o(r,i){return n(),e(`main`,a,[...i[0]||=[t(`header`,{class:`intro`},[t(`p`,{class:`eyebrow`},`Blog`),t(`h1`,{class:`name`},`Coming soon.`)],-1)]])}var s=r(i,[[`render`,o]]);export{s as default};
