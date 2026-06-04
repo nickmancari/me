@@ -1,1 +1,0 @@
-import{n as e,r as t,t as n}from"./index-C2m_kDMQ.js";import{t as r}from"./_plugin-vue_export-helper-BDNMzG2s.js";var i={},a={class:`page`};function o(r,i){return t(),e(`main`,a,[...i[0]||=[n(`header`,{class:`intro`},[n(`p`,{class:`eyebrow`},`Blog`),n(`h1`,{class:`name`},`Coming soon.`)],-1)]])}var s=r(i,[[`render`,o]]);export{s as default};
